@@ -11,6 +11,8 @@ import com.task.firstservice.feign.ThirdServiceClient;
 import com.task.firstservice.interfaces.FirstServiceInterface;
 import com.task.firstservice.request.dto.NamesRequestDTO;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 @Service
 public class FeignClientService implements FirstServiceInterface {
 	
@@ -23,6 +25,7 @@ public class FeignClientService implements FirstServiceInterface {
 	private ThirdServiceClient thirdServiceClient;
 
 	@Override
+	//@CircuitBreaker(name="other-service",fallbackMethod="otherServicefallback")
 	public String serviceResponse() {
 		
 		String response = null;
@@ -38,6 +41,12 @@ public class FeignClientService implements FirstServiceInterface {
 
 		return response;
 	}
+	
+	public String otherServicefallback(Throwable t) {
+		logger.info("Exception is",t.getMessage());
+		return new String("Unable to access the other services.FallBack method triggered.Please try after some time");
+	}
+
 
 	private NamesRequestDTO prepareJson() {
 		NamesRequestDTO names = new NamesRequestDTO();
